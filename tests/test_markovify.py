@@ -1,4 +1,5 @@
 import pytest
+
 from bot.adapter import MarkovifyAdapter
 from bot.adapter import from_newline_text
 
