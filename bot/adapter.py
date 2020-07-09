@@ -1,10 +1,9 @@
+from markovify.text import Text, NewlineText
+import re
 import logging
 import random
-import re
-from typing import Union
-
-from markovify.text import Text, NewlineText
 from stop_words import get_stop_words, StopWordError
+from typing import Union
 
 __version__ = "0.1.0"
 logger = logging.getLogger()
@@ -32,8 +31,22 @@ class MarkovifyAdapter:
         except (KeyError, StopWordError) as ke:
             logger.error(f"language={language} not supported. {ke}")
             raise KeyError(ke)
-        else:
-            self.language = language
+
+        self.language = language
+        self.state_space_size = len(self.model.chain.model)
+        self.state_size = self.model.state_size
+        self.parsed_sentences = self.model.parsed_sentences
+        self.last_updated = "Not implemented"
+
+    def status(self):
+        return {
+            'state_space_size': self.state_space_size,
+            'state_size': self.state_size,
+            'parsed_sentences': len(self.parsed_sentences),
+            'language': self.language,
+            'bot_version': __version__,
+            'last_updated': self.last_updated
+        }
 
     def generate_sentences(self, init_states, tries):
         for init_state in init_states:
