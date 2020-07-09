@@ -1,10 +1,21 @@
-import markovify
-import re
 import logging
 import random
+import re
+from typing import Union
+
+from markovify.text import Text, NewlineText
 from stop_words import get_stop_words, StopWordError
 
+__version__ = "0.1.0"
 logger = logging.getLogger()
+
+
+def from_newline_text(text: str, language: str = "italian"):
+    return MarkovifyAdapter(NewlineText(text), language)
+
+
+def from_object(model: Union[Text, NewlineText], language: str = "italian"):
+    return MarkovifyAdapter(model, language)
 
 
 class MarkovifyAdapter:
@@ -14,13 +25,15 @@ class MarkovifyAdapter:
         "Tarapia sulla supercazzola con scappellamento a destra o sinistra?"
     )
 
-    def __init__(self, text: str, language: str = "italian"):
-        self.model = markovify.NewlineText(text)
+    def __init__(self, model: Union[Text, NewlineText], language: str = "italian"):
+        self.model = model
         try:
             self.stopwords = get_stop_words(language)
         except (KeyError, StopWordError) as ke:
             logger.error(f"language={language} not supported. {ke}")
             raise KeyError(ke)
+        else:
+            self.language = language
 
     def generate_sentences(self, init_states, tries):
         for init_state in init_states:
