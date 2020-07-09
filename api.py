@@ -1,10 +1,11 @@
 import json
 import logging
 
+import pickle
 import falcon
 
 from bot.adapter import MarkovifyAdapter
-from bot.adapter import from_newline_text
+from bot.adapter import from_newline_text, from_object
 
 PREFIX = "/bot"
 QUERY_ENDPOINT = f"{PREFIX}/query"
@@ -49,4 +50,7 @@ def from_corpus(path: str):
 
 
 def from_pickle(path: str):
-    raise NotImplementedError("Compiled models are not supported yet.")
+    with open(path, 'rb') as infile:
+        model = pickle.load(infile)
+    bot = from_object(model)
+    return create(bot=bot)
