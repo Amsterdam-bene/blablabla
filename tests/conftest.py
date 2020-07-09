@@ -1,4 +1,8 @@
 import pytest
+from falcon import testing
+
+import api
+from bot.adapter import from_newline_text
 
 
 @pytest.fixture(scope="session")
@@ -8,3 +12,25 @@ def corpus():
         "Come?",
         "A destra, per due",
     ]
+
+
+@pytest.fixture(scope="session")
+def bot(corpus):
+    return from_newline_text(text=corpus)
+
+
+@pytest.fixture(scope="session")
+def client(bot):
+    return testing.TestClient(api.create(bot))
+
+
+@pytest.fixture
+def body():
+    return {
+        "_meta": {"api_version": 1},
+        "text": "hello bot, say something",
+        "nick": "Rocco",
+        "sender": "Rocco!~rtanica@unaffiliated/rocco",
+        "my_own_nick": "DeBot",
+        "channel": "##horsing-around",
+    }
