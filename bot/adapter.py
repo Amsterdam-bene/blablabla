@@ -72,7 +72,7 @@ class MarkovifyAdapter:
         random.shuffle(words)
 
         sentences = list(self.generate_sentences(words, self.MAX_TRIES))
-        if any(sentences):
+        if sentences:
             response = random.choice(sentences)
         if not response:
             response = self.model.make_short_sentence(
