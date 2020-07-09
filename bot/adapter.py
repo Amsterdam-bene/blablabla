@@ -51,7 +51,7 @@ class MarkovifyAdapter:
     def generate_sentences(self, init_states, tries):
         for init_state in init_states:
             try:
-                sentence = self.model.make_sentence_with_start(init_state, tries=tries)
+                sentence = self.model.make_sentence_with_start(init_state, tries=tries, strict=False)
             except KeyError as ke:
                 logger.error(f"Unknown initial state: {ke}")
             else:
@@ -70,7 +70,7 @@ class MarkovifyAdapter:
 
         words = [word for word in words if word.lower() not in self.stopwords]
         random.shuffle(words)
-
+        # TODO(gmodena): test sentence quality with init states of more than a single word
         sentences = list(self.generate_sentences(words, self.MAX_TRIES))
         if sentences:
             response = random.choice(sentences)
