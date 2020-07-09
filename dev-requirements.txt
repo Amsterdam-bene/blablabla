@@ -4,3 +4,4 @@ markovify==0.8.2
 requests==2.24.0
 falcon==2.0.0
 gunicorn==20.0.4
+flake8==3.8.3
