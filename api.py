@@ -45,7 +45,7 @@ def from_corpus(path: str):
     with open(path) as f:
         text = f.read()
 
-    bot = from_newline_text(text=text)
+    bot = from_newline_text(text=text, retain_original=False)
     return create(bot=bot)
 
 
