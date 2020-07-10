@@ -24,8 +24,10 @@ class MarkovifyAdapter:
         "Tarapia sulla supercazzola con scappellamento a destra o sinistra?"
     )
 
-    def __init__(self, model: Union[Text, NewlineText], language: str = "italian"):
+    def __init__(self, model: Union[Text, NewlineText], language: str = "italian", compiled=True):
         self.model = model
+        if compiled and not self.model.chain.compiled:
+            self.model.compile(inplace=True)
         try:
             self.stopwords = get_stop_words(language)
         except (KeyError, StopWordError) as ke:
