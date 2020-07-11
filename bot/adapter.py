@@ -9,8 +9,10 @@ __version__ = "0.1.0"
 logger = logging.getLogger()
 
 
-def from_newline_text(text: str, language: str = "italian"):
-    return MarkovifyAdapter(NewlineText(text), language)
+def from_newline_text(text: str, retain_original=True, language: str = "italian"):
+    return MarkovifyAdapter(
+        NewlineText(text, retain_original=retain_original), language
+    )
 
 
 def from_object(model: Union[Text, NewlineText], language: str = "italian"):
@@ -24,7 +26,9 @@ class MarkovifyAdapter:
         "Tarapia sulla supercazzola con scappellamento a destra o sinistra?"
     )
 
-    def __init__(self, model: Union[Text, NewlineText], language: str = "italian", compiled=True):
+    def __init__(
+        self, model: Union[Text, NewlineText], language: str = "italian", compiled=True
+    ):
         self.model = model
         if compiled and not self.model.chain.compiled:
             self.model.compile(inplace=True)
@@ -37,23 +41,32 @@ class MarkovifyAdapter:
         self.language = language
         self.state_space_size = len(self.model.chain.model)
         self.state_size = self.model.state_size
-        self.parsed_sentences = self.model.parsed_sentences
+        try:
+            parsed_sentences = len(self.model.parsed_sentences)
+        except AttributeError:
+            # Models trained with retain_original=False won't have the parsed_sentences
+            # attribute
+            parsed_sentences = None
+        finally:
+            self.parsed_sentences = parsed_sentences
         self.last_updated = "Not implemented"
 
     def status(self):
         return {
-            'state_space_size': self.state_space_size,
-            'state_size': self.state_size,
-            'parsed_sentences': len(self.parsed_sentences),
-            'language': self.language,
-            'bot_version': __version__,
-            'last_updated': self.last_updated
+            "state_space_size": self.state_space_size,
+            "state_size": self.state_size,
+            "parsed_sentences": self.parsed_sentences,
+            "language": self.language,
+            "bot_version": __version__,
+            "last_updated": self.last_updated,
         }
 
     def generate_sentences(self, init_states, tries):
         for init_state in init_states:
             try:
-                sentence = self.model.make_sentence_with_start(init_state, tries=tries, strict=False)
+                sentence = self.model.make_sentence_with_start(
+                    init_state, tries=tries, strict=False
+                )
             except KeyError as ke:
                 logger.error(f"Unknown initial state: {ke}")
             else:
