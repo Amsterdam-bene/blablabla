@@ -15,8 +15,8 @@ def from_newline_text(text: str, retain_original=True, language: str = "italian"
     )
 
 
-def from_json(json_str: str):
-    return MarkovifyAdapter(NewlineText.from_json(json_str))
+def from_json(json_str: str, language: str = "italian"):
+    return MarkovifyAdapter(NewlineText.from_json(json_str), language)
 
 
 def from_object(model: Union[Text, NewlineText], language: str = "italian"):
@@ -45,6 +45,7 @@ class MarkovifyAdapter:
         self.language = language
         self.state_space_size = len(self.model.chain.model)
         self.state_size = self.model.state_size
+
         try:
             parsed_sentences = len(self.model.parsed_sentences)
         except AttributeError:
