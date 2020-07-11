@@ -21,12 +21,12 @@ def check_response(client, body, headers=None, expected_text=None):
         assert response_text["reply"] == expected_text
 
 
-def check_bad_request(client, body, headers=None):
+def check_bad_request(client, body, headers=None, expected_status_code=400):
     if headers is None:
         headers = {"content-type": "application/json"}
     response = client.simulate_post(QUERY_ENDPOINT, json=body, headers=headers)
     assert response
-    assert response.status_code == 400
+    assert response.status_code == expected_status_code
 
 
 def test_health_endpoint(client):
@@ -45,10 +45,20 @@ def test_post_empty(client, body):
     check_response(client, body, expected_text=MarkovifyAdapter.DEFAULT_RESPONSE)
 
 
-def test_invalid_body(client, body):
+def test_invalid_body_missing_text(client, body):
     del body["text"]
+    check_bad_request(client, body)
+
+
+def test_invalid_body_missing_channel(client, body):
+    del body["channel"]
     check_bad_request(client, body)
 
 
 def test_empty_body(client):
     check_bad_request(client, {})
+
+
+def test_unknown_channel(client, body):
+    body["channel"] = "##something-something"
+    check_bad_request(client, body, expected_status_code=403)

@@ -21,13 +21,11 @@ pip install -e .
 
 Spin up an instance of the service with
 ```bash
-gunicorn "api:from_corpus('input.txt')"
+gunicorn "api:from_config('config.toml')"
 ```
-Where `input.txt` is a `\n` terminated corpus of sentences used to build 
-a markov chain.
-Alternatively use `"api:from_picke(<pickle file>)"` to load a pre-trained model. 
+Where `config.toml` contains a list of channels and their associated chains or text corpus.
 
-See [Data preparation and training](#data-preparation--training) for more details on how to generate both files.
+See [Data preparation and training](#data-preparation--training) for more details on how to generate model data.
 
 ## Endpoints
 
