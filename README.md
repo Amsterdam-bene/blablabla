@@ -75,7 +75,7 @@ python scripts/parse_logs.py --train-model pickle --source data/ --destination m
 
 or json:
 ```bash
-python scripts/parse_logs.py --train-model json --source data/ --destination model.pickle 
+python scripts/parse_logs.py --train-model json --source data/ --destination model.json
 ```
 
 See 
@@ -95,4 +95,3 @@ The following conditions apply:
  * Data is read from a text / blob file and stored in memory.
  * The chain does not support updates. To add the new sentences, retraining is required
  * While training is quick, inference latency is high when sampling with `strict=False` (our default). See https://github.com/jsvine/markovify/blob/master/markovify/text.py#L245 
- * The bot does not support multi channel / multi datasets (yet).
