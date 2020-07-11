@@ -15,6 +15,15 @@ message_patterns = {
 }
 
 
+def serialize_markovify_chain(model, destination, format):
+    if format == "pickle":
+        with open(destination, "wb") as fh:
+            pickle.dump(model, fh)
+    elif format == "json":
+        with open(destination, "w") as fh:
+            fh.write(model.to_json())
+
+
 def generate_newline_corpus(source, destination, message_pat):
     logs = sorted(os.listdir(source))
     for log_file in logs:
@@ -27,7 +36,9 @@ def generate_newline_corpus(source, destination, message_pat):
                     outfile.write(f"""{match['message']}\n""")
 
 
-def train_model(source, destination, message_pat):
+def train_model(source, destination, message_pat, format):
+    if format not in ("pickle", "json"):
+        raise ValueError(f"Serialization error: f{format} format not supported.")
     logs = sorted(os.listdir(source))
     sentences = []
     for log_file in logs:
@@ -38,16 +49,18 @@ def train_model(source, destination, message_pat):
                     sentences.append(match["message"])
     text = "\n".join(sentence for sentence in sentences)
 
-    with open(destination, "wb") as fh:
-        model = markovify.NewlineText(text, retain_original=False)
-        pickle.dump(model, fh)
+    model = markovify.NewlineText(text, retain_original=False)
+    serialize_markovify_chain(model, destination, format)
 
 
 def main(args):
     if args.log_type not in (message_patterns.keys()):
         raise ValueError(f"Log format {args.log_type} not supported")
     if args.train_model:
-        train_model(args.source, args.destination, message_patterns[args.log_type])
+        format = args.train_model
+        train_model(
+            args.source, args.destination, message_patterns[args.log_type], format
+        )
     else:
         generate_newline_corpus(
             args.source, args.destination, message_patterns[args.log_type]
@@ -71,9 +84,9 @@ parser.add_argument(
 )
 parser.add_argument(
     "--train-model",
-    help="if set, pickle a compressed markovify blob (faster load time & inference)",
+    help="Train a markovify chain and serialize it as either pickle or json",
     dest="train_model",
-    action="store_true",
+    default=None,
 )
 parser.set_defaults(train_model=False)
 

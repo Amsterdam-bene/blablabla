@@ -72,7 +72,12 @@ python scripts/parse_logs.py --source data/ --destination input.txt
 Alternatively, `--train-model` will train an instance of `markovify.NewlineText`, and serialize it as
 pickle:
 ```bash
-python scripts/parse_logs.py --train-model --source data/ --destination model.pickle 
+python scripts/parse_logs.py --train-model pickle --source data/ --destination model.pickle 
+```
+
+or json:
+```bash
+python scripts/parse_logs.py --train-model json --source data/ --destination model.pickle 
 ```
 
 See 
