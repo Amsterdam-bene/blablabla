@@ -15,6 +15,10 @@ def from_newline_text(text: str, retain_original=True, language: str = "italian"
     )
 
 
+def from_json(json_str: str):
+    return MarkovifyAdapter(NewlineText.from_json(json_str))
+
+
 def from_object(model: Union[Text, NewlineText], language: str = "italian"):
     return MarkovifyAdapter(model, language)
 

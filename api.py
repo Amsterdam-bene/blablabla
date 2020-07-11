@@ -5,7 +5,7 @@ import pickle
 import falcon
 
 from bot.adapter import MarkovifyAdapter
-from bot.adapter import from_newline_text, from_object
+from bot.adapter import from_newline_text, from_object, from_json
 
 PREFIX = "/bot"
 QUERY_ENDPOINT = f"{PREFIX}/query"
@@ -49,8 +49,16 @@ def from_corpus(path: str):
     return create(bot=bot)
 
 
+def from_json_chain(path: str):
+    with open(path) as f:
+        json_str = f.read()
+
+    bot = from_json(json_str=json_str)
+    return create(bot=bot)
+
+
 def from_pickle(path: str):
-    with open(path, 'rb') as infile:
+    with open(path, "rb") as infile:
         model = pickle.load(infile)
     bot = from_object(model)
     return create(bot=bot)
