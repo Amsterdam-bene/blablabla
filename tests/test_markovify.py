@@ -20,9 +20,6 @@ def test_invalid_init(corpus):
         from_newline_text("")
 
     with pytest.raises(KeyError):
-        from_newline_text(corpus, language=None)
-
-    with pytest.raises(KeyError):
         from_newline_text(corpus, language="unknown language")
 
 

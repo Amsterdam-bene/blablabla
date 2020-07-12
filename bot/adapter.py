@@ -3,41 +3,61 @@ import re
 import logging
 import random
 from stop_words import get_stop_words, StopWordError
-from typing import Union
+from typing import Union, List, Optional
 
 __version__ = "0.1.0"
 logger = logging.getLogger()
 
 
-def from_newline_text(text: str, retain_original=True, language: str = "italian"):
+def from_newline_text(
+    text: str,
+    retain_original=True,
+    language: Optional[str] = None,
+    stopwords: Optional[List[str]] = None,
+):
     return MarkovifyAdapter(
-        NewlineText(text, retain_original=retain_original), language
+        NewlineText(text, retain_original=retain_original), language, stopwords
     )
 
 
-def from_json(json_str: str, language: str = "italian"):
-    return MarkovifyAdapter(NewlineText.from_json(json_str), language)
+def from_json(
+    json_str: str, language: Optional[str] = None, stopwords: Optional[List[str]] = None
+):
+    return MarkovifyAdapter(NewlineText.from_json(json_str), language, stopwords)
 
 
-def from_object(model: Union[Text, NewlineText], language: str = "italian"):
-    return MarkovifyAdapter(model, language)
+def from_object(
+    model: Union[Text, NewlineText],
+    language: Optional[str] = None,
+    stopwords: Optional[List[str]] = None,
+):
+    return MarkovifyAdapter(model, language, stopwords)
 
 
 class MarkovifyAdapter:
     MAX_TRIES = 10
     MAX_WORDS_IN_SENTENCE = 180
+    DEFAULT_LANGUAGE = 'en' # Assume some degree of English text will be present in the markov chain.
     DEFAULT_RESPONSE = (
         "Tarapia sulla supercazzola con scappellamento a destra o sinistra?"
     )
 
     def __init__(
-        self, model: Union[Text, NewlineText], language: str = "italian", compiled=True
+        self,
+        model: Union[Text, NewlineText],
+        language: Optional[str] = None,
+        stopwords: Optional[List[str]] = None,
+        compiled=True,
     ):
         self.model = model
         if compiled and not self.model.chain.compiled:
             self.model.compile(inplace=True)
         try:
-            self.stopwords = get_stop_words(language)
+            self.stopwords = get_stop_words(self.DEFAULT_LANGUAGE)
+            if language:
+                self.stopwords.extend(get_stop_words(language))
+            if stopwords:
+                self.stopwords.extend(stopwords)
         except (KeyError, StopWordError) as ke:
             logger.error(f"language={language} not supported. {ke}")
             raise KeyError(ke)

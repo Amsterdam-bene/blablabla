@@ -73,7 +73,8 @@ def from_config(path: str):
             channel = bot["channel"]
             format = bot["format"]
             path = bot["path"]
-            language = bot["language"]
+            language = bot.get('langauge', None)
+            stopwords = bot.get('stopwords', None)
 
             if channel in bot:
                 raise ValueError(
@@ -90,7 +91,7 @@ def from_config(path: str):
                 model_input = fh.read()
 
             loader = loaders[format]
-            bots[channel] = loader(model_input, language=language)
+            bots[channel] = loader(model_input, language=language, stopwords=stopwords)
         except Exception as e:
             logger.error("Failed to load bot. ", str(e))
 
