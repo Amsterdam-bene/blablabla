@@ -37,7 +37,9 @@ def from_object(
 class MarkovifyAdapter:
     MAX_TRIES = 10
     MAX_WORDS_IN_SENTENCE = 180
-    DEFAULT_LANGUAGE = 'en' # Assume some degree of English text will be present in the markov chain.
+    DEFAULT_LANGUAGE = (
+        "en"  # Assume some degree of English text will be present in the markov chain.
+    )
     DEFAULT_RESPONSE = (
         "Tarapia sulla supercazzola con scappellamento a destra o sinistra?"
     )
@@ -57,7 +59,7 @@ class MarkovifyAdapter:
             if language:
                 self.stopwords.extend(get_stop_words(language))
             if stopwords:
-                self.stopwords.extend(stopwords)
+                self.stopwords.extend([word.lower() for word in stopwords])
         except (KeyError, StopWordError) as ke:
             logger.error(f"language={language} not supported. {ke}")
             raise KeyError(ke)
