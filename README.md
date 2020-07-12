@@ -94,4 +94,4 @@ Currently we use the [markovify](https://github.com/jsvine/markovify/) text gene
 The following conditions apply:
  * Data is read from a text / blob file and stored in memory.
  * The chain does not support updates. To add the new sentences, retraining is required
- * While training is quick, inference latency is high when sampling with `strict=False` (our default). See https://github.com/jsvine/markovify/blob/master/markovify/text.py#L245 
+ * While training is quick, inference latency is high when sampling with `strict=False` (our default is now `strict=True`). See https://github.com/jsvine/markovify/blob/master/markovify/text.py#L245 

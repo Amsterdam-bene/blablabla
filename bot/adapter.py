@@ -90,7 +90,7 @@ class MarkovifyAdapter:
         for init_state in init_states:
             try:
                 sentence = self.model.make_sentence_with_start(
-                    init_state, tries=tries, strict=False
+                    init_state, tries=tries, strict=True
                 )
             except KeyError as ke:
                 logger.error(f"Unknown initial state: {ke}")
