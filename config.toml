@@ -1,5 +1,5 @@
 [[bots]]
-channel = "##amsterdam-bene" # The channel this bot will support
+channel = "##horsing-around" # The channel this bot will support
 format = "json" # Bot format (text, json, pickle)
-path = "bots/##amsterdam-bene.json" # Path to the chain/corpus to load
+path = "bots/##horsing-around" # Path to the chain/corpus to load
 language = "italian" # We use this to filter stopwords & other language specific tweaks.
