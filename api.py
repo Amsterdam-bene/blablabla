@@ -73,7 +73,7 @@ def from_config(path: str):
             channel = bot["channel"]
             format = bot["format"]
             path = bot["path"]
-            language = bot.get('langauge', None)
+            language = bot.get('language', None)
             stopwords = bot.get('stopwords', None)
 
             if channel in bot:
