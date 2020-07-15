@@ -1,11 +1,12 @@
+import datetime
 import json
 import logging
-import toml
+import logging.config
+from typing import Dict
 
 import falcon
-import logging
+import toml
 
-from typing import Dict
 from bot.adapter import MarkovifyAdapter
 from bot.adapter import from_newline_text, from_object, from_json
 
@@ -14,12 +15,13 @@ QUERY_ENDPOINT = f"{PREFIX}/query"
 HEALTH_ENDPOINT = f"{PREFIX}/health"
 
 loaders = {"json": from_json, "pickle": from_object, "text": from_newline_text}
-logger = logging.getLogger(__name__)
+
+logging.config.fileConfig("logging.conf")
 
 
 class BotResource:
     def __init__(self, bots: Dict[str, MarkovifyAdapter] = None):
-        self.logger = logging.getLogger(__name__)
+        self.logger = logging.getLogger("bot")
         self.bots = bots
 
     def on_post(self, req, resp, **kwargs):
@@ -34,7 +36,9 @@ class BotResource:
             if channel not in self.bots:
                 raise falcon.HTTPForbidden(f"No resource for channel {channel}")
 
-            sentence = self.bots[channel].sample(body["text"])
+            bot = self.bots[channel]["bot"]
+            sentence = bot.sample(body["text"])
+
             resp.body = json.dumps({"reply": sentence})
         except falcon.HTTPForbidden as e:
             self.logger.error(str(e))
@@ -42,12 +46,24 @@ class BotResource:
         except Exception as e:
             self.logger.error(str(e))
             raise falcon.HTTPBadRequest("Invalid data", str(e))
+        else:
+            if self.bots[channel]["log_query"]:
+                self.logger.info(
+                    {
+                        "timestamp": datetime.datetime.now(),
+                        "channel": channel,
+                        "input": body["text"],
+                        "message": sentence,
+                    }
+                )
 
     def on_get_health(self, req, resp):
         resp.body = json.dumps(
             {
                 "status": "OK",
-                "bots": {channel: self.bots[channel].status() for channel in self.bots},
+                "bots": {
+                    channel: self.bots[channel]["bot"].status() for channel in self.bots
+                },
             }
         )
 
@@ -62,6 +78,7 @@ def create(bots=None):
 
 
 def from_config(path: str):
+    logger = logging.getLogger()
     conf = toml.load(path)
 
     if not conf["bots"]:
@@ -73,8 +90,9 @@ def from_config(path: str):
             channel = bot["channel"]
             format = bot["format"]
             path = bot["path"]
-            language = bot.get('language', None)
-            stopwords = bot.get('stopwords', None)
+            language = bot.get("language", None)
+            stopwords = bot.get("stopwords", None)
+            log_query = bot.get("log_query", False)
 
             if channel in bot:
                 raise ValueError(
@@ -91,7 +109,8 @@ def from_config(path: str):
                 model_input = fh.read()
 
             loader = loaders[format]
-            bots[channel] = loader(model_input, language=language, stopwords=stopwords)
+            bot = loader(model_input, language=language, stopwords=stopwords)
+            bots[channel] = {"bot": bot, "log_query": log_query}
         except Exception as e:
             logger.error("Failed to load bot. ", str(e))
 
