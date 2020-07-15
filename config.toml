@@ -2,5 +2,5 @@
 channel = "##horsing-around" # The channel this bot will support
 format = "json" # Bot format (text, json, pickle)
 path = "bots/##horsing-around" # Path to the chain/corpus to load
-# language = "italian" # Optioanl. Enablelanguage specific built-in filters
+# language = "en" # Optioanl. Enablelanguage specific built-in filters
 # stopwords = [] # Optional. Pass ad hoc stopwords, that will be stripped from the input text
