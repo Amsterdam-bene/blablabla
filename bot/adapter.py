@@ -54,17 +54,15 @@ class MarkovifyAdapter:
         self.model = model
         if compiled and not self.model.chain.compiled:
             self.model.compile(inplace=True)
+
+        self.language = language
+        self.stopwords = []
         try:
-            self.stopwords = get_stop_words(self.DEFAULT_LANGUAGE)
-            if language:
-                self.stopwords.extend(get_stop_words(language))
-            if stopwords:
-                self.stopwords.extend([word.lower() for word in stopwords])
+            self.set_stopwords(stopwords)
         except (KeyError, StopWordError) as ke:
             logger.error(f"language={language} not supported. {ke}")
             raise KeyError(ke)
 
-        self.language = language
         self.state_space_size = len(self.model.chain.model)
         self.state_size = self.model.state_size
 
@@ -77,6 +75,13 @@ class MarkovifyAdapter:
         finally:
             self.parsed_sentences = parsed_sentences
         self.last_updated = "Not implemented"
+
+    def set_stopwords(self, stopwords):
+        self.stopwords = get_stop_words(self.DEFAULT_LANGUAGE)
+        if self.language:
+            self.stopwords.extend(get_stop_words(self.language))
+        if stopwords:
+            self.stopwords.extend([word.lower() for word in stopwords])
 
     def status(self):
         return {
