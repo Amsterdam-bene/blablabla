@@ -21,7 +21,7 @@ def bot(corpus):
 
 @pytest.fixture(scope="session")
 def client(bot):
-    bots = {"##horsing-around": bot}
+    bots = {"##horsing-around": {"bot": bot, "log_query": False}}
     return testing.TestClient(api.create(bots))
 
 
