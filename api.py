@@ -108,8 +108,8 @@ def from_config(path: str):
             if format == "pickle":
                 mode += "b"
 
-            with open(path, mode) as fh:
-                model_input = fh.read()
+            with open(path, mode, encoding='utf-8') as fh:
+                model_input = json.load(fh)
 
             loader = loaders[format]
             bot = loader(model_input, language=language, stopwords=stopwords)

@@ -4,6 +4,7 @@ import logging
 import random
 from stop_words import get_stop_words, StopWordError
 from typing import Union, List, Optional
+import json
 
 __version__ = "0.1.0"
 logger = logging.getLogger()
@@ -21,9 +22,9 @@ def from_newline_text(
 
 
 def from_json(
-    json_str: str, language: Optional[str] = None, stopwords: Optional[List[str]] = None
+    json_thing: dict, language: Optional[str] = None, stopwords: Optional[List[str]] = None
 ):
-    return MarkovifyAdapter(NewlineText.from_json(json_str), language, stopwords)
+    return MarkovifyAdapter(NewlineText.from_dict(json_thing), language, stopwords)
 
 
 def from_object(

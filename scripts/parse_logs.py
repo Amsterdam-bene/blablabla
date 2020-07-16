@@ -3,7 +3,7 @@ import argparse
 import pickle
 import re
 import os
-
+import json
 
 message_patterns = {
     "irssi": re.compile(
@@ -20,7 +20,7 @@ def serialize_markovify_chain(model, destination, format):
         with open(destination, "wb") as fh:
             pickle.dump(model, fh)
     elif format == "json":
-        with open(destination, "w") as fh:
+        with open(destination, "w", encoding='utf8') as fh:
             fh.write(model.to_json())
 
 
@@ -49,7 +49,7 @@ def train_model(source, destination, message_pat, format):
                     sentences.append(match["message"])
     text = "\n".join(sentence for sentence in sentences)
 
-    model = markovify.NewlineText(text, retain_original=False)
+    model = markovify.NewlineText(text, retain_original=True)
     serialize_markovify_chain(model, destination, format)
 
 
