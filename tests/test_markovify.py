@@ -5,9 +5,9 @@ from bot.adapter import from_newline_text, from_json
 
 
 def test_from_json_chain(bot):
-    json_str = bot.model.to_json()
+    json_thing = bot.model.to_dict()
 
-    new_bot = from_json(json_str=json_str)
+    new_bot = from_json(json_thing=json_thing)
 
     assert isinstance(new_bot, MarkovifyAdapter)
     assert new_bot.model
