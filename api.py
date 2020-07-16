@@ -2,6 +2,7 @@ import datetime
 import json
 import logging
 import logging.config
+import os
 from typing import Dict
 
 import falcon
@@ -10,13 +11,15 @@ import toml
 from bot.adapter import MarkovifyAdapter
 from bot.adapter import from_newline_text, from_object, from_json
 
+LOGGING_CONF = os.environ.get('BLABLABLA_LOGGING_CONF', 'logging.conf')
+
 PREFIX = "/bot"
 QUERY_ENDPOINT = f"{PREFIX}/query"
 HEALTH_ENDPOINT = f"{PREFIX}/health"
 
 loaders = {"json": from_json, "pickle": from_object, "text": from_newline_text}
 
-logging.config.fileConfig("logging.conf")
+logging.config.fileConfig(LOGGING_CONF)
 
 
 class BotResource:
