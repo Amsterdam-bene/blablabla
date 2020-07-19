@@ -1,10 +1,10 @@
-from markovify.text import Text, NewlineText
-import re
 import logging
 import random
-from stop_words import get_stop_words, StopWordError
+import re
 from typing import Union, List, Optional
-import json
+
+from markovify.text import Text, NewlineText
+from stop_words import get_stop_words, StopWordError
 
 __version__ = "0.1.0"
 logger = logging.getLogger()
@@ -94,7 +94,8 @@ class MarkovifyAdapter:
             "last_updated": self.last_updated,
         }
 
-    def generate_sentences(self, init_states, tries):
+    def generate_sentences(self, init_states, tries, sanitizers=(lambda x: x, )):
+
         for init_state in init_states:
             try:
                 sentence = self.model.make_sentence_with_start(
@@ -103,29 +104,34 @@ class MarkovifyAdapter:
             except KeyError as ke:
                 logger.error(f"Unknown initial state: {ke}")
             else:
-                if sentence:
+                if sentence and all(sanitize(sentence) for sanitize in sanitizers):
                     yield sentence
 
-    def sample(self, text):
+    def sample(self, text: str, sanitizers: Optional[List[object]] = None):
         """
         Generate a reply for an input sentence
 
-        :param sentence:
-        :return:
+        :param sentence: input state for the markov chain
+        :param sanitizers: an (optional) list of functions to sanitize the markov chain output
+        :return: a reply
         """
+        sanitizers = sanitizers
+        if not sanitizers:
+            sanitizers = (lambda x: x, )
+
         response = None
         words = re.findall(r"(\w+)", text)
 
         words = [word for word in words if word.lower() not in self.stopwords]
         random.shuffle(words)
         # TODO(gmodena): test sentence quality with init states of more than a single word
-        sentences = list(self.generate_sentences(words, self.MAX_TRIES))
+        sentences = list(self.generate_sentences(words, self.MAX_TRIES, sanitizers=sanitizers))
         if sentences:
             response = random.choice(sentences)
         if not response:
             response = self.model.make_short_sentence(
                 self.MAX_WORDS_IN_SENTENCE, tries=self.MAX_TRIES
             )
-        if not response:
+        if not response or not all(sanitize(response) for sanitize in sanitizers):
             response = self.DEFAULT_RESPONSE
         return response

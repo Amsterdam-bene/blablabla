@@ -27,3 +27,4 @@ def test_markovify_adapter(corpus):
     bot = from_newline_text(corpus)
 
     assert bot.sample("") == MarkovifyAdapter.DEFAULT_RESPONSE
+

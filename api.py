@@ -3,6 +3,7 @@ import json
 import logging
 import logging.config
 import os
+import re
 from typing import Dict
 
 import falcon
@@ -27,6 +28,16 @@ class BotResource:
         self.logger = logging.getLogger("bot")
         self.bots = bots
 
+    @classmethod
+    def sanitize_response_privmsg(cls, sentence):
+        # Do not reply with a privmsg
+        message_pat = re.compile("^(?P<privmsg>.*?:)?\s(?P<message>.*)$", re.IGNORECASE)
+        match = re.match(message_pat, sentence)
+
+        if match:
+            sentence = sentence['message']
+        return sentence
+
     def on_post(self, req, resp, **kwargs):
         try:
             body = req.media
@@ -40,7 +51,7 @@ class BotResource:
                 raise falcon.HTTPForbidden(f"No resource for channel {channel}")
 
             bot = self.bots[channel]["bot"]
-            sentence = bot.sample(body["text"])
+            sentence = bot.sample(body["text"], sanitizers=(self.sanitize_response_privmsg,))
 
             resp.body = json.dumps({"reply": sentence})
         except falcon.HTTPForbidden as e:
@@ -69,6 +80,7 @@ class BotResource:
                 },
             }
         )
+
 
 
 def create(bots=None):
