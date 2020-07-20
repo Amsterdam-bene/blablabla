@@ -17,6 +17,11 @@ pip install -r dev-requirements.txt
 pip install -e .
 ```
 
+Test with:
+```bash
+pytest 
+```
+
 # Example usage
 
 Spin up an instance of the service with
@@ -28,6 +33,11 @@ Where `config.toml` contains a list of channels and their associated chains or t
 See [Data preparation and training](#data-preparation--training) for more details on how to generate model data.
 
 ## Endpoints
+
+| Endpoint      |  Verb      |  Description               |
+| ------------- | :--------- | :-----------               |
+|  /bot/query   | POST       |  Query a bot               |
+|  /bot/health  | GET        |  Service health (all bots) |
 
 The `/bot/query` endpoint expects a POST with headers and payload
 as described in [https://github.com/Amsterdam-bene/poe-component-irc-plugin-recallback](https://github.com/Amsterdam-bene/poe-component-irc-plugin-recallback)
@@ -45,14 +55,40 @@ Should return a reply along the lines of
 {"reply": "Tarapia sulla supercazzola con scappellamento a destra o sinistra?"}
 ```
 
-The `/health` endpoint answers `GET` requests with the service status, and bot info.
+The `/bot/health` endpoint answers `GET` requests with the service status, and bot info.
 For example
 ```bash
 curl ${uri}/bot/health
 ```
-Should return 
+Should return something like
 ```bash
-{"status": "OK"}
+{
+    "status": "OK",
+    "bots": {
+        "##horsing-around": {
+            "model": {
+                "state_space_size": 608440,
+                "state_size": 2,
+                "parsed_sentences": null,
+                "language": null,
+                "bot_version": "0.1.0",
+                "last_updated": "Not implemented"
+            },
+            "model_path": "bots/##horsing-around"
+        },
+        "##horsing-around-test": {
+            "model": {
+                "state_space_size": 608440,
+                "state_size": 2,
+                "parsed_sentences": null,
+                "language": null,
+                "bot_version": "0.1.0",
+                "last_updated": "Not implemented"
+            },
+            "model_path": "bots/##horsing-around"
+        }
+    }
+}
 ```
 
 # Data preparation & training
