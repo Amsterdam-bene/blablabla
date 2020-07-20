@@ -108,23 +108,23 @@ def from_config(path: str):
     for bot in conf["bots"]:
         try:
             channels = bot["channel"]
-            format = bot["format"]
+            model_format = bot["format"]
             path = bot["path"]
             language = bot.get("language", None)
             stopwords = bot.get("stopwords", None)
             log_query = bot.get("log_query", False)
 
-            if format not in loaders:
-                raise ValueError(f"Format {format} is not supported")
+            if model_format not in loaders:
+                raise ValueError(f"Format {model_format} is not supported")
 
             mode = "r"
-            if format == "pickle":
+            if model_format == "pickle":
                 mode += "b"
 
             with open(path, mode, encoding="utf-8") as fh:
                 model_input = json.load(fh)
 
-            loader = loaders[format]
+            loader = loaders[model_format]
             bot = loader(model_input, language=language, stopwords=stopwords)
 
             for channel in channels:
