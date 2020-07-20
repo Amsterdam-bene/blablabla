@@ -107,17 +107,13 @@ def from_config(path: str):
     bots = {}
     for bot in conf["bots"]:
         try:
-            channel = bot["channel"]
+            channels = bot["channel"]
             format = bot["format"]
             path = bot["path"]
             language = bot.get("language", None)
             stopwords = bot.get("stopwords", None)
             log_query = bot.get("log_query", False)
 
-            if channel in bot:
-                raise ValueError(
-                    f"A bot has already been instantiated for {channel}. Skipping {path}."
-                )
             if format not in loaders:
                 raise ValueError(f"Format {format} is not supported")
 
@@ -130,7 +126,14 @@ def from_config(path: str):
 
             loader = loaders[format]
             bot = loader(model_input, language=language, stopwords=stopwords)
-            bots[channel] = {"bot": bot, "log_query": log_query, "model_path": path}
+
+            for channel in channels:
+                if channel in bots:
+                    raise ValueError(
+                        f"A bot has already been instantiated for {channel}. Skipping {path}."
+                    )
+                bots[channel] = {"bot": bot, "log_query": log_query, "model_path": path}
+
         except Exception as e:
             logger.error("Failed to load bot. ", str(e))
 

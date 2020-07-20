@@ -1,5 +1,5 @@
 [[bots]]
-channel = "##horsing-around" # The channel this bot will support
+channel = ["##horsing-around", "##horsing-around-test"] # The channels this bot will support
 format = "json" # Bot format (text, json, pickle)
 path = "bots/##horsing-around" # Path to the chain/corpus to load
 # language = "en" # Optioanl. Enable language specific built-in filters
