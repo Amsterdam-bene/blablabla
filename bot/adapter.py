@@ -107,7 +107,7 @@ class MarkovifyAdapter:
                 if sentence and all(sanitize(sentence) for sanitize in sanitizers):
                     yield sentence
 
-    def sample(self, text: str, sanitizers: Optional[List[object]] = None):
+    def sample(self, sentence: str, sanitizers: Optional[object] = None) -> object:
         """
         Generate a reply for an input sentence
 
@@ -120,7 +120,7 @@ class MarkovifyAdapter:
             sanitizers = (lambda x: x, )
 
         response = None
-        words = re.findall(r"(\w+)", text)
+        words = re.findall(r"(\w+)", sentence)
 
         words = [word for word in words if word.lower() not in self.stopwords]
         random.shuffle(words)
