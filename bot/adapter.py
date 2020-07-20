@@ -22,7 +22,9 @@ def from_newline_text(
 
 
 def from_json(
-    json_thing: dict, language: Optional[str] = None, stopwords: Optional[List[str]] = None
+    json_thing: dict,
+    language: Optional[str] = None,
+    stopwords: Optional[List[str]] = None,
 ):
     return MarkovifyAdapter(NewlineText.from_dict(json_thing), language, stopwords)
 
@@ -68,13 +70,11 @@ class MarkovifyAdapter:
         self.state_size = self.model.state_size
 
         try:
-            parsed_sentences = len(self.model.parsed_sentences)
+            self.parsed_sentences = len(self.model.parsed_sentences)
         except AttributeError:
             # Models trained with retain_original=False won't have the parsed_sentences
             # attribute
-            parsed_sentences = None
-        finally:
-            self.parsed_sentences = parsed_sentences
+            self.parsed_sentences = None
         self.last_updated = "Not implemented"
 
     def set_stopwords(self, stopwords):
@@ -94,7 +94,7 @@ class MarkovifyAdapter:
             "last_updated": self.last_updated,
         }
 
-    def generate_sentences(self, init_states, tries, sanitizers=(lambda x: x, )):
+    def generate_sentences(self, init_states, tries, sanitizers=(lambda x: x,)):
 
         for init_state in init_states:
             try:
@@ -117,7 +117,7 @@ class MarkovifyAdapter:
         """
         sanitizers = sanitizers
         if not sanitizers:
-            sanitizers = (lambda x: x, )
+            sanitizers = (lambda x: x,)
 
         response = None
         words = re.findall(r"(\w+)", sentence)
@@ -125,7 +125,9 @@ class MarkovifyAdapter:
         words = [word for word in words if word.lower() not in self.stopwords]
         random.shuffle(words)
         # TODO(gmodena): test sentence quality with init states of more than a single word
-        sentences = list(self.generate_sentences(words, self.MAX_TRIES, sanitizers=sanitizers))
+        sentences = list(
+            self.generate_sentences(words, self.MAX_TRIES, sanitizers=sanitizers)
+        )
         if sentences:
             response = random.choice(sentences)
         if not response:
