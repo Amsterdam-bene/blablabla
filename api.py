@@ -4,7 +4,7 @@ import logging
 import logging.config
 import os
 import re
-from typing import Dict
+from typing import Dict, Union
 
 import falcon
 import toml
@@ -24,7 +24,7 @@ logging.config.fileConfig(LOGGING_CONF)
 
 
 class BotResource:
-    def __init__(self, bots: Dict[str, MarkovifyAdapter] = None):
+    def __init__(self, bots: Dict[str, Dict[str, Union[str, MarkovifyAdapter]]] = None):
         self.logger = logging.getLogger("bot")
         self.bots = bots
 
