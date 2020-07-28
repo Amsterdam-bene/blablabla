@@ -9,7 +9,6 @@ from stop_words import get_stop_words, StopWordError
 __version__ = "0.1.0"
 logger = logging.getLogger()
 
-
 def from_newline_text(
     text: str,
     retain_original=True,
@@ -101,8 +100,8 @@ class MarkovifyAdapter:
                 sentence = self.model.make_sentence_with_start(
                     init_state, tries=tries, strict=True
                 )
-            except KeyError as ke:
-                logger.error(f"Unknown initial state: {ke}")
+            except Exception as e:
+                logger.error(f"Unknown state: {e}")
             else:
                 if sentence and all(sanitize(sentence) for sanitize in sanitizers):
                     yield sentence
