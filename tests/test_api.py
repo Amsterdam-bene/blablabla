@@ -62,3 +62,13 @@ def test_empty_body(client):
 def test_unknown_channel(client, body):
     body["channel"] = "##something-something"
     check_bad_request(client, body, expected_status_code=403)
+
+
+def test_validation_privms():
+    from api import BotResource
+
+    resp = BotResource.sanitize_response_privmsg("Antani: come fosse")
+    assert resp == "come fosse"
+
+    resp = BotResource.sanitize_response_privmsg("Antani: come fosse tipo: mah")
+    assert resp == "come fosse tipo: mah"

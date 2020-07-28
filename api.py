@@ -35,7 +35,7 @@ class BotResource:
         match = re.match(message_pat, sentence)
 
         if match:
-            sentence = sentence["message"]
+            sentence = match["message"]
         return sentence
 
     def on_post(self, req, resp, **kwargs):
@@ -57,10 +57,10 @@ class BotResource:
 
             resp.body = json.dumps({"reply": sentence})
         except falcon.HTTPForbidden as e:
-            self.logger.error(str(e))
+            self.logger.error(str(e), exc_info=True)
             raise e
         except Exception as e:
-            self.logger.error(str(e))
+            self.logger.error(str(e), exc_info=True)
             raise falcon.HTTPBadRequest("Invalid data", str(e))
         else:
             if self.bots[channel]["log_query"]:
