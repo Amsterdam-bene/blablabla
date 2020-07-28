@@ -101,7 +101,7 @@ class MarkovifyAdapter:
                     init_state, tries=tries, strict=True
                 )
             except Exception as e:
-                logger.error(f"Unknown state: {e}")
+                logger.error(f"Unknown state: {e}", exc_info=True)
             else:
                 if sentence and all(sanitize(sentence) for sanitize in sanitizers):
                     yield sentence
