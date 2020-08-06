@@ -12,6 +12,9 @@ message_patterns = {
     "znc": re.compile(
         "^\[(?P<time>.*?)\]\s<(?P<nick>.*?)>\s(?P<message>.*)$", re.IGNORECASE
     ),
+    "txt": re.compile(
+        "^(?P<message>.*)$", re.IGNORECASE
+    ),
 }
 
 
@@ -78,7 +81,7 @@ parser.add_argument(
 )
 parser.add_argument(
     "--log-type",
-    help="Type of log to parse (znc, irssi). Default: irssi",
+    help="Type of log to parse (znc, irssi, txt). Default: irssi",
     default="irssi",
     type=str,
 )
