@@ -24,11 +24,24 @@ pytest
 
 # Example usage
 
+Consider `config.toml` contains a list of channels and their associated chains or text corpus
+
+Docker
+------
+
+```bash
+docker build . -t blablabla
+docker run -p 127.0.0.1:8000:8000 -v ./config.toml:/blablabla/config.toml -v /folder_with_bots/:/blablabla/bots/ blablabla
+```
+
+Native
+------
+
 Spin up an instance of the service with
 ```bash
 gunicorn "api:from_config('config.toml')"
 ```
-Where `config.toml` contains a list of channels and their associated chains or text corpus.
+
 
 See [Data preparation and training](#data-preparation--training) for more details on how to generate model data.
 
