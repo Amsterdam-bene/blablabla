@@ -1,7 +1,7 @@
 stop-words==2018.7.23
 pytest==5.4.3
 https://github.com/gmodena/markovify/archive/utf8-encoding.zip
-requests==2.24.0
+requests==2.31.0
 falcon==2.0.0
 gunicorn==20.0.4
 flake8==3.8.3
